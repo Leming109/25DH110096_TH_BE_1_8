@@ -41,8 +41,8 @@ namespace _25DH110096_TH_BE_1_8.Models
         //thêm dữ liệu upload ảnh kiểu httpspostfile de upload ảnh
         //dùng thuộc tính [NotMapped] để đánh dấu  đây là trường dự liệu không lưu vào DB
 
-        [RegularExpression(@"[a-zA-Z0-9\s_\\.\-:])+(.png|.jpg|.gif|.PNG|.JPG|.GIF)$",
-            ErrorMessage = "Chỉ chấp nhận các định dạng ảnh PNG, JPG và GIF")]
+        [RegularExpression(@"^[a-zA-Z0-9\s_\\.\-:]+\.(png|jpg|gif|PNG|JPG|GIF)$",
+         ErrorMessage = "Must be png, jpg or gif")]
         [NotMapped]
         public HttpPostedFile UploadImg { get; set; }
     }

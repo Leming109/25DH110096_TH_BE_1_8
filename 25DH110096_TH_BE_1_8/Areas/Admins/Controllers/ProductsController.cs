@@ -8,6 +8,8 @@ using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using _25DH110096_TH_BE_1_8.Models;
+using _25DH110096_TH_BE_1_8.Models.ViewModel;
+using PagedList;
 
 namespace _25DH110096_TH_BE_1_8.Areas.Admins.Controllers
 {
@@ -16,10 +18,41 @@ namespace _25DH110096_TH_BE_1_8.Areas.Admins.Controllers
         private TH_BE_2026Entities db = new TH_BE_2026Entities();
 
         // GET: Admins/Products
-        public ActionResult Index()
+        public ActionResult Index(string searchTerm, decimal? minPrice, decimal? maxPrice, string sortOrder, int? page)
         {
-            var products = db.Products.Include(p => p.Category);
-            return View(products.ToList());
+            var model = new SearchProductVM();
+            var products = db.Products.AsQueryable();
+            if (!string.IsNullOrEmpty(searchTerm))
+            { // Thanh tim kiem
+                products = products.Where(p =>
+                p.ProductName.Contains(searchTerm) ||
+                p.ProductDecription.Contains(searchTerm) ||
+                p.Category.CategoryName.Contains(searchTerm)
+                );
+            }
+            if(minPrice.HasValue)
+            {
+                products = products.Where(p => p.ProductPrice >= minPrice.Value);
+            }
+            if (maxPrice.HasValue) {
+                products = products.Where(p => p.ProductPrice <= maxPrice.Value);
+            }
+            switch(sortOrder)
+            {
+                case "name_asc": products = products.OrderBy(p  => p.ProductName); break;
+                case "name_desc": products = products.OrderByDescending(p => p.ProductName); break;
+                case "price_asc": products = products.OrderBy(p => p.ProductPrice); break;
+                case "price_desc": products = products.OrderByDescending(p => p.ProductPrice); break;
+                default: products = products.OrderBy(p => p.ProductName);
+                    break;
+            }
+            model.SortOrder = sortOrder;
+
+            int pageNumber = page ?? 1;
+            int pageSize = 2;
+            //model.Products = products.ToList();
+            model.Products = products.ToPagedList(pageNumber, pageSize);
+            return View(model);
         }
 
         // GET: Admins/Products/Details/5
@@ -49,7 +82,7 @@ namespace _25DH110096_TH_BE_1_8.Areas.Admins.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage")] Product product)
+        public ActionResult Create([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
             if (ModelState.IsValid)
             {
@@ -90,7 +123,7 @@ namespace _25DH110096_TH_BE_1_8.Areas.Admins.Controllers
         // more details see https://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage")] Product product)
+        public ActionResult Edit([Bind(Include = "ProductID,CategoryID,ProductName,ProductDecription,ProductPrice,ProductImage,UploadImg")] Product product)
         {
             if (ModelState.IsValid)
             {
