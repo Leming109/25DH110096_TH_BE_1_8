@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
-using PagedList.MVC;
+using PagedList.Mvc;
 
 namespace _25DH110096_TH_BE_1_8.Models.ViewModel
 {
@@ -18,7 +18,7 @@ namespace _25DH110096_TH_BE_1_8.Models.ViewModel
         public int PageNumber { get; set; }
         public int PageSize { get; set; } = 10;
 
-        public PagedList.IPagedList<>
+        public PagedList.IPagedList<Product> Products { get; set; }
 
 
         //public List<Product> Products {  get; set; }
