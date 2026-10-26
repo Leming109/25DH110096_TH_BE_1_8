@@ -26,7 +26,7 @@ namespace _25DH110096_TH_BE_1_8.Controllers
             return View(cart);
         }
 
-        public ActionResult Index2(int? page)
+        public ActionResult Index(int? page)
         {
             var cart = GetCartService().GetCart();
             var products = db.Products.ToList();
