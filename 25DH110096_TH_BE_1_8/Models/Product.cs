@@ -11,13 +11,17 @@ namespace _25DH110096_TH_BE_1_8.Models
 {
     using System;
     using System.Collections.Generic;
-    
+    using System.ComponentModel.DataAnnotations;
+    using System.ComponentModel.DataAnnotations.Schema;
+    using System.Web;
+
     public partial class Product
     {
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2214:DoNotCallOverridableMethodsInConstructors")]
         public Product()
         {
             this.OrderDetails = new HashSet<OrderDetail>();
+            ProductImage = "~/Content/images/default_img.png";
         }
     
         public int ProductID { get; set; }
@@ -30,5 +34,13 @@ namespace _25DH110096_TH_BE_1_8.Models
         public virtual Category Category { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<OrderDetail> OrderDetails { get; set; }
+
+        [RegularExpression(@"^[a-zA-Z0-9\s_\\.\-:]+\.(png|jpg|gif|PNG|JPG|GIF)$",
+        ErrorMessage = "Must be png, jpg or gif")]
+
+        [NotMapped]
+
+        public HttpPostedFile UploadImg { get; set; }
+
     }
 }
