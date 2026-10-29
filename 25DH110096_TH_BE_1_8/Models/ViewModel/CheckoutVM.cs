@@ -10,11 +10,12 @@ namespace _25DH110096_TH_BE_1_8.Models.ViewModel
     {
         public List<CartItem> CartItems {  get; set; }                                                                      
         public int CustomerID { get; set; }
+
         [Display(Name = "Ngày đặt hàng")]
         public System.DateTime OrderDate { get; set; }
 
         [Display(Name = "Tổng giá trị")]
-        public string TotalAmount { get; set; }
+        public decimal TotalAmount { get; set; }
 
         [Display(Name = "Trạng thái thanh toán")]
         public string PaymentStatus { get; set; }

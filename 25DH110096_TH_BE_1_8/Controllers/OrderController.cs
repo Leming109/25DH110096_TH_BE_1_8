@@ -43,7 +43,7 @@ namespace _25DH110096_TH_BE_1_8.Controllers
             var model = new CheckoutVM
             {
                 CartItems = cart,
-                //TotalAmount = cart.Sum(item => item.TotalPrice),
+                TotalAmount = cart.Sum(item => item.TotalPrice),
                 OrderDate = DateTime.Now,
                 ShippingAddress = customer.CustomerAddress,
                 CustomerID = customer.CustomerID,
@@ -91,32 +91,43 @@ namespace _25DH110096_TH_BE_1_8.Controllers
                     default: paymentStatus = "Chưa thanh toán"; break;
                 }
 
-                //var order = new Order
-                //{
-                //    CustomerID = customer.CustomerID,
-                //    OrderDate = model.OrderDate,
-                //    TotalAmount = model.TotalAmount,
-                //    PaymentStatus = paymentStatus,
-                //    PaymentMethod = model.PaymentMethod,
-                //    ShippingMethod = model.ShippingMethod,
-                //    ShippingAddress = model.ShippingAddress,
-                //    OrderDetails = cart.Select(item => new OrderDetail {
-                //    {
-                //        ProductID = item.ProductID,
-                //        Quantity = item.Quantity,
-                //        UnitPrice = item.UnitPrice,
-                //        TotalPrice = item.TotalPrice
-                //    })
-                //};
-
-                //db.Orders.Add(order);
+                var order = new Order
+                {
+                    CustomerID = customer.CustomerID,
+                    OrderDate = model.OrderDate,
+                    TotalAmount = model.TotalAmount,
+                    PaymentStatus = paymentStatus,
+                    PaymentMethod = model.PaymentMethod,
+                    ShippingMethod = model.ShippingMethod,
+                    ShippingAddress = model.ShippingAddress,
+                    OrderDetails = cart.Select(item => new OrderDetail 
+                    {
+                        ProductID = item.ProductID,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        TotalPrice = item.TotalPrice
+                    }).ToList()
+                };
+                db.Orders.Add(order);
                 db.SaveChanges();
 
                 Session["Cart"] = null;
 
-                //return RedirectToAction("OrderSuccess", new { id = order.OrderID });
+                return RedirectToAction("OrderSuccess", new { id = order.OrderID });
             }
             return View(model);
         }
+
+        public ActionResult OrderSuccess(int? id)
+        {
+            var order = db.Orders.Include("OrderDetails").SingleOrDefault(o => o.OrderID == id);
+            if(order == null)
+            {
+                return HttpNotFound();
+            }    
+            return View(order);
+        }
+
+
     }
 }
